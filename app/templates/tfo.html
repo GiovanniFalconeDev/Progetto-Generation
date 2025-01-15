@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione TFO - Terminazioni Ottiche</title>
+    <link href="https://unpkg.com/bootstrap-italia@2.11.0/dist/css/bootstrap-italia.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map-container {
+            height: 600px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .nav-lower {
+        margin-top: 15px;
+        }
+        .nav-link {
+        padding: 10px 15px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        }
+        .d-flex.flex-column.align-items-start {
+        margin-top: 20px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        footer {
+            background-color: #004E99;
+            color: white;
+            padding: 40px 0;
+        }
+        footer a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            font-size: 25px;
+            font-weight: bold;
+            margin: auto;
+            font: #ffffff;
+        }
+        footer h5 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            
+        }
+        footer ul {
+            list-style: none;
+            padding: 0;
+        }
+        footer ul li {
+            margin-bottom: 10px;
+        }
+        footer .footer-bottom {
+            border-top: 1px solid #ffffff;
+            margin-top: 30px;
+            padding-top: 20px;
+            font-size: 14px;
+        }
+        h2 {
+            font-size: 25px;
+        }
+
+
+    </style>
+</head>
+<body>
+   <!-- Header -->
+   <div class="it-header-slim-wrapper text-white" style="background-color: #013975; height: 80px;">
+    <div class="container-xxl">
+        <div class="row align-items-center">
+            <div class="col-6">
+                <span class="d-flex align-items-center" style="font-size: 1rem; font-weight: bold";>
+                    <img src="../static/generation.png" alt="Logo Generation" style="height: 70px; margin-right: 8px;">
+                </span>
+            </div>
+            <div class="col-6 text-end">
+                <a href="https://italy.generation.org/" class="text-white">Generation Italy</a>
+            </div>
+        </div>
+    </div>
+</div>
+<header class="it-header-wrapper">
+    <div class="it-header-center-wrapper bg-primary">
+        <div class="container-xxl">
+            <div class="row">
+                <div class="col-12">
+                    <div class="it-header-center-content-wrapper d-flex justify-content-between align-items-center">
+                        <!-- Logo e Brand -->
+                        <div class="d-flex flex-column align-items-start" style="margin-top: 20px;">
+                            <div class="d-flex align-items-center">
+                                <img src="../static/logo_sinfi.png" alt="Logo SINFI" style="height: 50px; margin-right: 15px;">
+                                <div>
+                                    <div class="it-brand-title text-white">SINFI</div>
+                                    <div class="it-brand-tagline text-white">
+                                        Sistema Informativo Nazionale Federato delle Infrastrutture
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Navigazione sotto il Brand -->
+                            <nav class="d-flex gap-4 nav-lower">
+                                <a href="/" class="text-white text-decoration-none nav-link" id="link-edifici">Registrazione edifici</a>
+                                <a href="/tfo" class="text-white text-decoration-none nav-link" id="link-terminazioni">Registrazione terminazioni ottiche</a>
+                            </nav>
+                        </div>
+    
+                        <!-- Sezione social -->
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-white">Seguici su</span>
+                            <a href="https://www.linkedin.com/company/infratel-italia/" class="text-white text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
+                              </svg>
+                            </a>
+                            <a href="https://www.youtube.com/channel/UCuRe9dPjCiL4G1FabUP7MlQ" class="text-white text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-youtube" viewBox="0 0 16 16">
+                                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
+                              </svg>
+                            </a>
+                            <a href="https://x.com/i/flow/login?redirect_after_login=%2FInfratel_Italia" class="text-white text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                              </svg>
+                            </a>
+                            <a href="https://www.instagram.com/infratel_italia/" class="text-white text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                              </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <!-- Main Content -->
+    <main class="container my-3">
+        <h2 class="text-center"  style="font-size: 1.7rem";>Registrazione delle terminazioni ottiche (TFO)</h2>
+        <p class="text-center" style="font-size: 1rem"; >Compila il modulo sottostante per registrare le terminazioni ottiche (TFO).</p>
+
+            <!-- Form -->
+            <style>
+                .custom-border {
+                    border: 2px solid #add8e6; /* Blu chiaro */
+                    border-radius: 10px; /* Angoli arrotondati */
+                    padding: 15px; /* Spazio interno */
+                    background-color: #f9f9f9; /* Colore di sfondo opzionale */
+                }
+            </style>
+<div class="row">
+    <!-- Form -->
+    <div class="col-lg-4 custom-border">
+        <form id="registrazione-edificio">
+            <div class="mb-3">
+                <input type="hidden" id="edificioid"></input>
+                <input type="hidden" id="latitudine" name="latitudine">
+                <input type="hidden" id="longitudine" name="longitudine">
+                <label for="indirizzo" class="form-label">Indirizzo</label>
+                <div class="input-group" id="controls">
+                    <input type="text" id="indirizzo" name="indirizzo" class="form-control" placeholder="Inserisci indirizzo">
+                    <button class="btn btn-outline-secondary" type="button" id="cerca-indirizzo" onclick="moveToAddress()">
+                        <img src="../static/lense.jpg" alt="Cerca" style="width: 20px; height: 20px;">
+                    </button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="piano" class="form-label">Piano</label>
+                <input type="text" id="piano" name="piano" class="form-control" placeholder="Inserisci piano edificio">
+            </div>
+            <div class="mb-3">
+                <label for="scala" class="form-label">Scala</label>
+                <input type="text" id="scala" name="scala" class="form-control" placeholder="Inserisci scala edificio">
+            </div>
+            <div class="mb-3">
+                <label for="interno" class="form-label">Interno</label>
+                <input type="text" id="interno" name="interno" class="form-control" placeholder="Inserisci interno edificio">
+            </div>
+            <div class="mb-3">
+                <label for="posizioned" class="form-label">Posizione dettagliata</label>
+                <textarea id="posizioned" name="posizioned" class="form-control" placeholder="Inserisci informazioni aggiuntive" rows="4"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="aggiungiDati()">Aggiungi</button>
+            <button type="submit" class="btn btn-success" onclick="inviaDati()">Invio</button>
+        </form>
+    </div>
+
+    <!-- Mappa -->
+    <div class="col-lg-8">
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+</div>
+                        <style>
+                            #map-container {
+                                width: 90%;
+                                max-width: 1174px;
+                                aspect-ratio: 1174 / 515;
+                                position: relative;
+                                border: 1px solid #ccc;
+                                background-color: #eaeaea;
+                            }
+                            #map {
+                                width: 100%;
+                                height: 100%;
+                                position: relative;
+                                overflow: hidden;
+                                cursor: grab;
+                            
+                            }                      
+                        </style>
+                        <!-- INIZIO DEL JAVASCRIPT DELLA MAPPA 
+                            si trovano le funzioni di:
+                            -zoom in e zoom out
+                            -posizionamento del marker 
+                            -il loading dei diversi pezzzi della mappa "i tiles"
+                            -funzione per lo spostamento all'indirizzo indicato
+                            
+                            
+                        -->
+                        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                        <script>
+                            // Inizializza la mappa
+                            const mappa = L.map('map').setView([41.9028, 12.4964], 13); // Coordinate di default (Roma)
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            }).addTo(mappa);
+                    
+                            // Aggiungi un marker di default
+                            let marker = L.marker([41.9028, 12.4964]).addTo(mappa);
+                            
+                            // Variabile globale per il layer GeoJSON
+                            let geojsonLayer = null;
+                    
+                            // Variabile globale per salvare le coordinate
+                            let currentCoordinates = { lat: 41.9028, lon: 12.4964 };
+                    
+                            // Funzione per aggiornare la posizione della mappa e del marker
+                            function updateMap(lat, lon) {
+                                console.log(lat,lon);
+                                mappa.setView([lat, lon], 15);
+                                marker.setLatLng([lat, lon]);
+                                currentCoordinates = { lat, lon }; // Salva le coordinate nella variabile globale
+                    
+                                // Aggiorna la tabella con le coordinate
+                                document.getElementById('latitudeCell').textContent = lat.toFixed(6);
+                                document.getElementById('longitudeCell').textContent = lon.toFixed(6);
+                            }
+                    
+                            // Gestione del form per la ricerca di indirizzi
+                            function moveToAddress() {
+                                const address = document.getElementById('indirizzo').value;
+                                if (!address) {
+                                    alert('Inserisci un indirizzo valido.');
+                                    return;
+                                }
+                    
+                                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.length === 0) {
+                                            alert('Indirizzo non trovato.');
+                                            return;
+                                        }
+                                        const lat = parseFloat(data[0].lat);
+                                        const lon = parseFloat(data[0].lon);
+                                        document.getElementById('latitudine').value = lat.toFixed(6);
+                                        document.getElementById('longitudine').value = lon.toFixed(6);
+                                        mappa.setView([lat, lon], 15);
+                                        console.log(lat,lon)
+                                        marker.setLatLng([lat, lon]);
+                                        recoverapi(lat, lon);
+                                    })
+                                    .catch(error => alert('Errore: ' + error.message));
+                                    
+                                };
+                    
+                    // Funzione per calcolare il centroide
+                    async function calculateCentroid(coordinates) {
+                        if (!Array.isArray(coordinates) || coordinates.length === 0) {
+                            throw new Error("Coordinate non valide.");
+                        }
+                    
+                        let totalX = 0, totalY = 0, totalPoints = 0;
+                        coordinates.forEach(polygon => {
+                            polygon[0].forEach(point => {
+                                totalX += point[0];
+                                totalY += point[1];
+                                totalPoints++;
+                            });
+                        });
+                    
+                        return [totalX / totalPoints, totalY / totalPoints];
+                    }
+                    
+                    // Funzione per recuperare dati catastali dall'API
+                    function recoverapi(lat,lon) {
+                        const latitudine = lat;
+                        const longitudine = lon;
+                        console.log("Requesting data for coordinates:", lat, lon);
+                    
+                        const apiUrl = `/query_bounding_box?latitudine=${latitudine}&longitudine=${longitudine}`;
+                        console.log("API URL:", apiUrl);
+                        
+                        fetch(apiUrl, { cache: 'no-store' })
+                            .then(apiResponse => {
+                                if (!apiResponse.ok) {
+                                    throw new Error(`HTTP error! status: ${apiResponse.status}`);
+                                }
+                                return apiResponse.json();
+                            })
+                            .then(geojsonData => {
+                                console.log("Received GeoJSON data:", geojsonData);
+                    
+                                if (geojsonLayer) {
+                                    mappa.removeLayer(geojsonLayer);
+                                }
+                                const totaleEdifici = geojsonData.features.length;
+                                const edificiPredisposti = contaEdificiPredisposti(geojsonData.features);
+                                console.log('totale edifici:' , totaleEdifici);
+                                console.log('edificiPredisposti:' , edificiPredisposti);
+                    
+                                geojsonData.features.forEach((data) => L.geoJSON(data, {
+                style: feature => ({
+                        color: feature.properties.disponibilita ? "green" : "red",
+                        weight: 2
+                            }),
+                        onEachFeature: function (feature, layer) {
+        
+                        // Eventi su ogni poligono
+                        layer.on('dblclick', async function () {
+                            const id = feature.properties.id;
+                            const centroid = feature.properties.centroide;
+
+                            // Utilizza Nominatim per ottenere informazioni dal centroide
+                            const info = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${centroid[1]}&lon=${centroid[0]}`)
+                            .then(response => response.json())
+                            .catch(error => {
+                                console.error("Errore durante l'interrogazione di Nominatim:", error);
+                                return null;
+                            });
+
+                        // Controlla se abbiamo ricevuto dati
+                        if (info) {
+                            console.log("Informazioni ottenute da OSM:", info.address.road);
+                            document.getElementById('edificioid').value = id;
+                            document.getElementById('latitudine').value = centroid[1];
+                            document.getElementById('longitudine').value = centroid[0];
+                            document.getElementById('indirizzo').value = info.address.road + "," + info.address.house_number + "," + info.address.village  ;
+
+                        } else {
+                            alert("Non è stato possibile recuperare informazioni dal centroide.");
+                        }
+
+                        // Inizializza il marker se non esiste
+                        if (!marker) {
+                        marker = L.marker([centroid[1], centroid[0]]).addTo(mappa);
+                         } else {
+                        // Sposta il marker
+                        marker.setLatLng([centroid[1], centroid[0]]);
+                        }
+                            
+                        });
+                    }
+                    }).addTo(mappa))
+            }).catch(error => {
+            console.error("Error during API call:", error);
+            alert("Errore nel recupero dei dati: " + error.message);
+        });
+    }
+    </script>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+                        <script>
+                            // Funzione per calcolare il centroide di un poligono
+                            async function calculateCentroid(coordinates) {
+                                let x = 0, y = 0, n = 0;
+                                coordinates[0].forEach(coord => {
+                                    x += coord[0];
+                                    y += coord[1];
+                                    n++;
+                                });
+                                return [x / n, y / n];
+                            }
+                            // Funzione per contare gli edifici predisposti alla banda larga
+                            function contaEdificiPredisposti(features) {
+                              return features.filter(feature => feature.properties?.PT_EPFO === "S").length;
+                            }
+                        
+                            // Funzione per creare il grafico della banda larga
+                            function creaGraficoBandaLarga(totaleEdifici, edificiPredisposti) {
+                              const edificiNonPredisposti = totaleEdifici - edificiPredisposti;
+                        
+                              new Chart(ctx, {
+                                  type: 'pie',
+                                  data: {
+                                      labels: [
+                                          `Predisposti (${edificiPredisposti})`,
+                                          `Non Predisposti (${edificiNonPredisposti})`
+                                      ],
+                                      datasets: [{
+                                          data: [edificiPredisposti, edificiNonPredisposti],
+                                          backgroundColor: ['rgba(0, 255, 0, 0.7)', 'rgba(255, 0, 0, 0.7)'],
+                                          borderColor: ['rgba(0, 255, 0, 1)', 'rgba(255, 0, 0, 1)'],
+                                          borderWidth: 1
+                                      }]
+                                  },
+                                  options: {
+                                      responsive: true,
+                                      plugins: {
+                                          legend: { position: 'bottom' },
+                                          title: {
+                                              display: true,
+                                              text: 'Edifici Predisposti alla Banda Larga',
+                                              font: { size: 14, family: 'Arial', weight: 'bold' }
+                                          }
+                                      }
+                                  }
+                              });
+                            }
+                        </script>
+                    </div>
+                    </div>
+            </div>
+
+        <!-- Tabella -->
+        <div class="my-4">
+            <div class="it-card">
+                <div class="it-card-body">
+                    <table class="table table-striped" id="dati_registrati">
+                        <thead>
+                            <tr>
+                                <th>Indirizzo</th>
+                                <th>Piano</th>
+                                <th>Scala</th>
+                                <th>Interno</th>
+                                <th>Posizione dettagliata</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dati_registrati">
+                        </tr>
+                    </thead>
+                    <tbody id="dati_body">
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/bootstrap-italia@2.11.0/dist/js/bootstrap-italia.bundle.min.js"></script>
+    <script>
+        // Funzione per aggiungere dati alla tabella
+        function aggiungiDati() {
+            const id = document.getElementById('edificioid').value.trim();
+            const indirizzo = document.getElementById('indirizzo').value.trim();
+            const piano = document.getElementById('piano').value.trim();
+            const scala = document.getElementById('scala').value.trim();
+            const interno = document.getElementById('interno').value.trim();
+            const posizioned = document.getElementById('posizioned').value.trim();
+    
+            // Verifica che tutti i campi siano compilati
+            if (!id || !indirizzo || !piano || !scala || !interno || !posizioned) {
+                alert('Per favore, compila tutti i campi.');
+                return;
+            }
+    
+            // Aggiungi la riga alla tabella
+            const tbody = document.getElementById('dati_body');
+            const nuovaRiga = document.createElement('tr');
+            nuovaRiga.className = "record"
+            nuovaRiga.innerHTML = `
+                <td style="display: none">${id}</td>
+                <td>${indirizzo}</td>
+                <td>${piano}</td>
+                <td>${scala}</td>
+                <td>${interno}</td>
+                <td>${posizioned}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Elimina</button></td>
+            `;
+            tbody.appendChild(nuovaRiga);
+        }
+    
+        // Funzione per inviare i dati al backend
+        async function inviaDati() {
+            // const tbody = document.getElementById('dati_registrati');
+            const righe = document.getElementById("dati_body").getElementsByClassName("record");
+            console.log(righe);
+    
+            if (righe.length === 0) {
+                alert('Nessun dato da inviare.');
+                return;
+            }
+    
+            const datiDaInviare = Array.from(righe).map(riga => {
+                const celle = riga.querySelectorAll('td');
+                return {
+                    id: celle[0].textContent,
+                    indirizzo: celle[1].textContent,
+                    piano: celle[2].textContent,
+                    scala: celle[3].textContent,
+                    interno: celle[4].textContent,
+                    posizioned: celle[5].textContent,
+                };
+            });
+    
+            try {
+                // Effettua la richiesta POST al backend
+                const response = await fetch('/tfo/add_tfo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datiDaInviare),
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Successo:', data);
+                    alert('Dati inviati con successo!');
+                    // Pulisce la tabella dopo l'invio
+                } else {
+                    console.error('Errore nella richiesta:', response.statusText);
+                    alert('Errore durante l\'invio dei dati.');
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+                alert('Si è verificato un errore di rete.');
+            }
+        }
+    </script>
+
+    <!--Footer-->
+<footer>
+    <div class="it-footer-slim-wrapper text-white" style="background-color: #004E99;">
+        <div class="container-xxl" style="margin-left: 295px; margin-right: 10px;">
+                <div class="text-center">
+                    <h2>INFRATEL ITALIA</h2></br>
+                </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="https://www.sinfi.it/portal//wp-content/uploads/2023/11/logo-ministero-mimit.svg" width="200" height="200">
+                <p>Ministero delle Imprese <br> e del Made in Italy</p><br>
+                <img src="https://www.sinfi.it/portal//wp-content/uploads/2023/12/logo-infratel.png" width="200" height="100">
+                <br><br>
+                <p>Infratel Italia</p>
+            </div>
+            <div class="col-md-4">
+                <h5>CONTATTI</h5>
+                <p>Infratel Italia S.p.A</p>
+                <p>Società soggetta alla direzione ed al coordinamento dell'azionista unico Invitalia - Agenzia nazionale per l’attrazione degli investimenti e lo sviluppo d’impresa S.p.A.</p>
+                <br><br>
+                <p>Capitale sociale € 8.594.044,00 iscrizione al Registro delle Imprese di Roma</p>
+                <p>C.F. e P.IVA 07791571008</p>
+                <p>R.E.A. 1055521 Roma</p>
+                <p>T +39 06 97749311</p>
+                <p>F +39 06 97749370</p>
+            </div>
+            <div class="col-md-4">
+                <p>info@infratelitalia.it</p>
+                <p>infrastruttureservizidigitali@postacert.infratelitalia.it</p>
+                <p>posta@pec.infratelitalia.it</p>
+                <p>Sede legale</p>
+                <p>presso Agenzia nazionale per l’attrazione degli investimenti e lo sviluppo d’impresa S.p.A Via Calabria, 46 – 00187 Roma</p>
+                
+                <p>Sede operativa</p>
+                <p>presso il Ministero delle Imprese e del Made in Italy Viale America, 201 - 00144 Roma</p>
+            </div>
+        </div>
+        <div class="text-center" style="margin-top: 25px;">
+            <p>Dichiarazione di Intento Didattico<br>
+        Questa applicazione è stata sviluppata esclusivamente a scopo esercitativo dagli studenti del corso "Generation". I dati presenti al suo interno sono interamente frutto di invenzione e non hanno alcun valore reale o ufficiale.
+        Qualsiasi riferimento a persone, luoghi, aziende o eventi è puramente casuale e utilizzato al solo fine di dimostrare le funzionalità dell'applicazione.</p></div>
+    </div>
+</footer>
+<div class="footer-bottom text-center" style="background-color: #013975; height: 55px;">
+    <a href="https://www.iubenda.com/privacy-policy/98489026/full-legal" style="color: white;">Privacy policy</a> | 
+    <a href="https://www.iubenda.com/privacy-policy/98489026/cookie-policy" style="color: white;">Cookie policy</a> | 
+    <a href="https://www.infratelitalia.it/social-media-policy" style="color: white;">Social media policy</a> | 
+    <a href="https://www.sinfi.it/portal/consultazione-dati/i-servizi-del-sinfi/note-legali/" style="color: white;">Note legali</a>
+</div>
+</body>
+</html>
