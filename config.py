@@ -1,1 +1,0 @@
-endpoint = "postgresql+psycopg2://postgres:postgres@165.22.75.145:15432/generation"
